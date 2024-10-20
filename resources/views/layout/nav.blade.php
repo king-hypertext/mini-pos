@@ -7,12 +7,12 @@
                     <span class="nav-menu-name">Menu</span>
                 </a>
             </li>
-            <li class="nav-menu">
+            {{-- <li class="nav-menu">
                 <a href="#" class="nav-menu-link">
                     <i class="fa-solid fa-user-group nav-menu-icon"></i>
                     <span class="nav-menu-name">Customers</span>
                 </a>
-            </li>
+            </li> --}}
             <li class="nav-menu">
                 <a href="{{ route('products.index') }}" class="nav-menu-link">
                     <i class="fa-solid fa-gift nav-menu-icon"></i>
@@ -26,7 +26,7 @@
                 </a>
             </li>
             <li class="nav-menu">
-                <a href="#" class="nav-menu-link">
+                <a href="{{route('sales.index')}}" class="nav-menu-link">
                     <i class="fa-solid fa-money-bill-trend-up nav-menu-icon"></i>
                     <span class="nav-menu-name">Sales</span>
                 </a>

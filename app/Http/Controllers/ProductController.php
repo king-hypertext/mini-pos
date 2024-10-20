@@ -41,14 +41,14 @@ class ProductController extends Controller
     {
         // $request->dd();
         $request->validated();
-        // $s = ['In Stock', 'Out of Stock', 'Low Stock', 'Pending Restock'];
-        // for ($i = 0; $i < 4; $i++) {
-        //     ProductStatus::create([
-        //         'status' => $s[$i],
-        //     ]);
-        // }
-        $brand = Brand::firstOrCreate(['id' => (int)$request->brand], ['name' => $request->brand]);
-        $category = Category::firstOrCreate(['id' => (int)$request->category], ['name' => $request->category]);
+        $s = ['In Stock', 'Out of Stock', 'Low Stock', 'Pending Restock'];
+        for ($i = 0; $i < count($s); $i++) {
+            ProductStatus::create([
+                'status' => $s[$i],
+            ]);
+        }
+        $brand = Brand::firstOrCreate(['id' => (int)$request->brand], ['name' => $request->brand ?? 'N/A']);
+        $category = Category::firstOrCreate(['id' => (int)$request->category], ['name' => $request->category ?? 'N/A']);
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $image_dir = $image->store('images/products', 'public');
@@ -94,8 +94,8 @@ class ProductController extends Controller
     {
         $request->validated();
 
-        $brand = Brand::firstOrCreate(['id' => (int)$request->brand], ['name' => $request->brand]);
-        $category = Category::firstOrCreate(['id' => (int)$request->category], ['name' => $request->category]);
+        $brand = Brand::firstOrCreate(['id' => (int)$request->brand], ['name' => $request->brand ?? 'N/A']);
+        $category = Category::firstOrCreate(['id' => (int)$request->category], ['name' => $request->category ?? 'N/A']);
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');

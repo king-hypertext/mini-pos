@@ -33,7 +33,7 @@
                         <!-- Product Category -->
                         <div class="col-md-6">
                             <div class="form-outline mb-4" data-mdb-select-init>
-                                <select required id="productBrand" name="brand"
+                                <select id="productBrand" name="brand"
                                     class="form-select form-select-lg select2-dynamic select2--large">
                                     <option value="">Select Product Brand</option>
                                     @forelse ($brands as $brand)
@@ -56,7 +56,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-outline mb-4" data-mdb-select-init>
-                                <select required id="productCategory" name="category"
+                                <select id="productCategory" name="category"
                                     class="form-select form-select-lg select2-dynamic select2--large">
                                     <option value="">Select Product Category</option>
                                     @forelse ($categories as $category)
@@ -117,13 +117,14 @@
 
             const market_price = document.getElementById('market_price');
             const price = document.getElementById('price');
+            // console.log(market_price.value, price.value);
 
             price.addEventListener('input', function() {
                 // alert('Please enter')
                 let mp = parseFloat(market_price.value);
                 let p = parseFloat(price.value);
 
-                if (p <= mp) {
+                if (p < mp) {
                     $('.invalid-feedback').show();
                     price.classList.add('is-invalid');
                 } else {
@@ -139,14 +140,16 @@
                 let submitter = $('form#editProduct :submit');
                 submitter.html($loader + 'Saving ...').addClass('disabled');
                 let name = $('input[name="name"]');
-                if (price.value <= market_price.value) {
+                let mp = parseFloat(market_price.value);
+                let p = parseFloat(price.value);
+                if (p < mp) {
                     event.preventDefault();
                     $('.invalid-feedback').show();
-                    submitter.html('add product').removeClass('disabled');
+                    submitter.html('update').removeClass('disabled');
                 }
                 if ($(name).hasClass('is-invalid') && $(name).val() !== '{{ $product->name }}') {
                     event.preventDefault();
-                    submitter.html('add product');
+                    submitter.html('update');
                 }
             });
             $('input[name="name"]').on('input', function() {

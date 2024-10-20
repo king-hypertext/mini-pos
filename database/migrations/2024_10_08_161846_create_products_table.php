@@ -20,14 +20,14 @@ return new class extends Migration
             $table->bigInteger('quantity')->default(0);
             $table->string('image')->nullable();
             $table->date('expiry_date')->nullable();
-            $table->unsignedBigInteger('product_status_id')->default(1);
-            $table->foreign('product_status_id')->references('id')->on('product_statuses')->onDelete('cascade');
-            $table->unsignedBigInteger('category_id');
-            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
-            $table->unsignedBigInteger('brand_id');
-            $table->foreign('brand_id')->references('id')->on('brands')->onDelete('cascade');
+            $table->foreignId('product_status_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('category_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('brand_id')->nullable()->constrained()->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
+            // $table->unsignedBigInteger('product_status_id')->default(1);
+            // $table->unsignedBigInteger('category_id');
+            // $table->unsignedBigInteger('brand_id');
         });
     }
 

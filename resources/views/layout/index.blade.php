@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="token" content="{{ csrf_token() }}" />
     <link rel="stylesheet" href="{{ asset('asset/select2/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('asset/select2/css/select2-bootstrap-5-theme.css') }}">
     <link rel="stylesheet" href="{{ asset('asset/datatables.min.css') }}">
@@ -247,69 +248,74 @@
             <button id="test" class="btn btn-close-white">test cart</button>
         </div>
         <aside class="right-menu bg-white shadow-2-soft">
-            <section class="container h-100 perfect-scrollbar mt-4">
-
+            <section class="container overflow-y-auto mt-4 perfect-scrollbar" style="height: calc(100% - 300px)">
                 <div class="card shadow-1-soft">
                     <div class="table-responsive">
-                        <table class="table">
-                            <thead>
+                        <table class="table table-borderless table-striped align-middle">
+                            <thead class="position-sticky">
                                 <tr class="text-uppercase">
-                                    <th scope="col">product</th>
-                                    <th scope="col">Qty</th>
+                                    {{-- <th>#</th> --}}
+                                    <th scope="col">item</th>
+                                    <th scope="col">qty</th>
                                     <th scope="col">Price</th>
+                                    {{-- <th width="0%" scope="col"></th> --}}
                                 </tr>
                             </thead>
-                            <tbody id="cart-row">
-                                {{-- <tr class="">
-                                    <td scope="row">R1C1</td>
-                                    <td>
-                                        <div class="d-flex">
-                                            <button class="btn btn-link px-2"
-                                                onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-                                                <i class="fas fa-minus"></i>
-                                            </button>
-
-                                            <input id="form1" min="1" name="quantity" value="1"
-                                                type="number" class="form-control form-control-sm"
-                                                style="max-width: 60px; padding-right: 0;" />
-
-                                            <button class="btn btn-link px-2" data-item-id=""
-                                                onclick="this.parentNode.querySelector('input[type=number]').stepUp();f(this)">
-                                                <i class="fas fa-plus"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                    <td>4</td>
-                                </tr> --}}
-
+                            <tbody id="cart-row" class="text-capitalize">
                             </tbody>
                         </table>
                     </div>
 
                 </div>
             </section>
-            <div class="container perfect-scrollbar">
-                <div class="cart-footer">
-                    <div class="d-flex justify-content-between mt-1">
-                        <span class="ml-2">Subtotal: </span>
-                        <span class="ml-2 cart-subtotal">GHS 0.00</span>
+            {{-- <div class="container"> --}}
+            <div class="cart-footer">
+                <div class="mb-3">
+                    <label for="customer" class="form-label">Customer Name</label>
+                    <input type="text" class="form-control" name="customer" id="customer"
+                        placeholder="Enter customer name" />
+                </div>
+                @use(App\Models\PaymentMethod)
+                @php
+                    $payment_modes = PaymentMethod::all();
+                @endphp
+                <div class="mb-3">
+                    <div class="mb-3">
+                        <label for="payment_method" class="form-label">Payment mode</label>
+                        <select class="form-select form-select-lg select2" name="payment_method" id="payment_method">
+                            <option value="">Select Payment Mode</option>
+                            @forelse ($payment_modes as $method)
+                                <option value="{{ $method->id }}" {{ $method->name === 'cash' ? 'selected' : '' }}>
+                                    {{ $method->name }}</option>
+                            @empty
+                            @endforelse
+                        </select>
                     </div>
-                    <div class="d-flex justify-content-between mt-1">
-                        <span class="ml-2">Discount: </span>
-                        <span class="ml-2">GHS 0.00</span>
-                    </div>
-                    <div class="d-flex justify-content-between mt-1">
-                        <span class="ml-2">Payable Amount: </span>
-                        <span class="ml-2 cart-payable">GHS 0.00</span>
-                    </div>
-                    <div class="d-flex justify-content-between mt-1">
-                        <button class="btn btn-danger clear-cart">cancel</button>
-                        <button class="btn btn-success confirm-btn">
-                            <i class="fas fa-check-circle me-2"></i>
-                            confirm</button>
-                    </div>
+
+                </div>
+                <div class="d-flex align-items-center">
+                    Item Count: <span class="small-text ms-2" id="items-count">0</span>
+                </div>
+                <div class="d-flex justify-content-between mt-1">
+                    <span class="ml-2">Subtotal: </span>
+                    <span class="ml-2 cart-subtotal fw-bold">GHS 0.00</span>
+                </div>
+                {{-- <div class="d-flex justify-content-between mt-1">
+                    <span class="ml-2">Discount: </span>
+                    <span class="ml-2">GHS 0.00</span>
+                </div> --}}
+                {{-- <div class="d-flex justify-content-between mt-1">
+                    <span class="ml-2">Payable Amount: </span>
+                    <span class="ml-2 cart-payable">GHS 0.00</span>
+                </div> --}}
+                <div class="d-flex justify-content-between mt-1">
+                    <button class="btn btn-danger clear-cart">clear</button>
+                    <button class="btn btn-success confirm-btn">
+                        <i class="fas fa-check-circle me-2"></i>
+                        save & confirm</button>
                 </div>
             </div>
+            {{-- </div> --}}
         </aside>
     </main>
     <script type="text/javascript">
@@ -380,7 +386,7 @@
     <script src="{{ asset('asset/select2/js/select2.min.js') }}"></script>
     <script src="{{ asset('asset/custom/script.js') }}"></script>
     <script>
-        var product_table = new DataTable('#table-products', {
+        const product_table = new DataTable('#table-products', {
             select: false,
             serverSide: false,
             processing: true,
@@ -455,15 +461,10 @@
         $('#printButton').on('click', function() {
             product_table.button(2).trigger();
         });
-
-
-
-
-        // Add event listeners
-        $('.search-table').on('keyup', function() {
+        $('input.search-table').on('keyup', function() {
             product_table.search(this.value).draw();
         });
-        const ps = new PerfectScrollbar(document.querySelector('.perfect-scrollbar'));
+        const ps = new PerfectScrollbar('.perfect-scrollbar');
         $('.select2').select2({
             width: '100%',
         });

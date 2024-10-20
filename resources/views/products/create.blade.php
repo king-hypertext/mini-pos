@@ -28,7 +28,7 @@
                     <!-- Product Category -->
                     <div class="col-md-6">
                         <div class="form-outline mb-4" data-mdb-select-init>
-                            <select required id="productBrand" name="brand"
+                            <select id="productBrand" name="brand"
                                 class="form-select form-select-lg select2-dynamic select2--large">
                                 <option value="">Select Product Brand</option>
                                 @forelse ($brands as $brand)
@@ -49,7 +49,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-outline mb-4" data-mdb-select-init>
-                            <select required id="productCategory" name="category"
+                            <select id="productCategory" name="category"
                                 class="form-select form-select-lg select2-dynamic select2--large">
                                 <option value="">Select Product Category</option>
                                 @forelse ($categories as $category)
@@ -124,7 +124,7 @@
             const $loader = '<span id="btn-icon" class="fas fa-spinner fa-spin me-2"></span>';
             $('form#addProduct').submit(function(event) {
                 let submitter = $('form#addProduct :submit');
-                submitter.html($loader + 'Saving ...');
+                submitter.html($loader + 'Saving ...').addClass('disabled');
                 let name = $('input[name="name"]');
                 if (price.value <= market_price.value) {
                     event.preventDefault();

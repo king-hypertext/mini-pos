@@ -44,7 +44,7 @@
                     </button>
                 </div>
                 <div class="d-flex align-items-center">
-                    <input class="form-control me-2 search-table" type="search" placeholder="Search table"
+                    <input class="form-control me-2 search-table" type="search" placeholder="Search products..."
                         aria-label="Search">
                 </div>
             </div>
@@ -62,10 +62,10 @@
                             <th scope="col">Expiry Date</th>
                             <th scope="col"></th>
                         </tr>
-                    </thead>
+                    </thead> 
                     <tbody>
                         @forelse ($products as $product)
-                            <tr>
+                            <tr class="text-capitalize">
                                 <td scope="row">{{ $loop->iteration }}</td>
                                 <td>
                                     @isset($product->image)
@@ -73,8 +73,8 @@
                                     @endisset
                                 </td>
                                 <td>{{ $product->name }}</td>
-                                <td>{{ $product->brand->name }}</td>
-                                <td>{{ $product->category->name }}</td>
+                                <td>{{ $product->brand?->name ?? 'N/A' }}</td>
+                                <td>{{ $product->category?->name ?? 'N/A' }}</td>
                                 <td>{{ $product->price }}</td>
                                 <td>{{ $product->quantity }}</td>
                                 <td>{{ Carbon::parse($product->expiry_date)->longRelativeToNowDiffForHumans() }}
@@ -99,7 +99,6 @@
 
                     </tbody>
                 </table>
-                {{--  --}}
             </div>
         </div>
         {{-- @include('products.edit') --}}
@@ -172,7 +171,6 @@
                     });
                 });
             });
-
         });
     </script>
 @endsection

@@ -22,6 +22,14 @@ class Product extends Model
         'brand_id',
         'category_id',
     ];
+    public function cart()
+    {
+        return $this->hasMany(Cart::class);
+    }
+    public function sale()
+    {
+        return $this->hasMany(Sale::class);
+    }
     public function brand()
     {
         return $this->belongsTo(Brand::class);
@@ -33,5 +41,9 @@ class Product extends Model
     public function status()
     {
         return $this->belongsTo(ProductStatus::class, 'product_status_id', 'id');
+    }
+    public function salesItems()
+    {
+        return $this->hasMany(SalesItem::class);
     }
 }
