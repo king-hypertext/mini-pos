@@ -500,6 +500,10 @@ document.querySelector('button.confirm-btn').addEventListener('click', async () 
                 }),
                 success: function (data) {
                     console.log(data);
+                    if(data.success){
+                        cart.clear();
+                        window.open(data.url, '_self');
+                    }
                 },
                 error: function (error) {
                     console.error(error);

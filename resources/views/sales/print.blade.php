@@ -16,17 +16,26 @@
             height: 100%;
             margin: 0 !important;
             page-break-after: avoid;
+            width: 80mm;
         }
 
         @media print {
             @page {
-                size: A4;
+                size: thermal;
                 margin: 0;
             }
 
             body {
-                font-family: Courier;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
                 font-size: 12pt;
+                width: 80mm;
+            }
+
+            .receipt-container {
+                width: 100%;
+                padding: 1px;
+                /* border: 1px solid #ddd; */
+                /* border-radius: 10px; */
             }
         }
 
@@ -77,7 +86,7 @@
         <header>
             <h1>Receipt</h1>
             <p>Company Name</p>
-            <p>Date: ${date}</p>
+            <p>Date: {{ now()->format('Y-m-d H:i A') }}</p>
         </header>
         <table>
             <thead>
@@ -89,21 +98,23 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>${item.name}</td>
-                    <td>${item.quantity}</td>
-                    <td>${item.price}</td>
-                    <td>${(item.price * item.quantity).toFixed(2)}</td>
-                </tr>
+                @foreach ($sale_items as $item)
+                    <tr>
+                        <td>{{ $item->product->name }}</td>
+                        <td style="text-align:right;">{{ $item->quantity }}</td>
+                        <td style="text-align:right;">{{ $item->unit_price }}</td>
+                        <td style="text-align:right;">{{ number_format($item->subtotal, 2) }}</td>
+                    </tr>
+                @endforeach
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan="3">Subtotal:</th>
-                    <th>${subtotal}</th>
+                    <th colspan="2">Subtotal:</th>
+                    <th colspan="2" style="text-align: right">{{ 'GHS ' . number_format($sale->total, 2) }}</th>
                 </tr>
                 <tr>
-                    <th colspan="3">Total:</th>
-                    <th>${total}</th>
+                    <th colspan="2">Total:</th>
+                    <th colspan="2" style="text-align: right">{{ 'GHS ' . number_format($sale->total, 2) }}</th>
                 </tr>
             </tfoot>
         </table>

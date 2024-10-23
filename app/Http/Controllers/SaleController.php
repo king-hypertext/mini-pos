@@ -7,6 +7,9 @@ use App\Http\Requests\StoreSaleRequest;
 use App\Http\Requests\UpdateSaleRequest;
 use App\Models\Customer;
 use App\Models\PaymentMethod;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\Printer;
 
 class SaleController extends Controller
 {
@@ -66,6 +69,13 @@ class SaleController extends Controller
         //         'date' => now(),
         //     ]);
         // }
+        $pdf = Pdf::loadView('sales.print', ['sale' => $sale, 'sale_items' => $sale->salesItems]);
+        $pdf->setPaper('thermal');
+        $pdf->save('pdf.pdf', 'public');
+        // $connector = new FilePrintConnector("/dev/usb/lp0");
+        // $printer = new Printer($connector);
+        // $printer->text($pdf->output());
+        // $printer->cut();
         return response()->json([
             'success' => true,
             'message' => 'Order created successfully',
