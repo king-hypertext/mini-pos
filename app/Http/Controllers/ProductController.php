@@ -109,7 +109,7 @@ class ProductController extends Controller
             'market_price' => $request->market_price,
             'price' => $request->price,
             'expiry_date' => $request->expiry_date,
-            'quantity' => 5,
+            // 'quantity' => 5,
             'product_status_id' => 4,
             'brand_id' => $brand->id,
             'category_id' => $category->id,

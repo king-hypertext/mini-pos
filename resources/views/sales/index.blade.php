@@ -42,143 +42,162 @@
                         print
                     </button>
                 </div>
-                <div class="d-flex align-items-center">
-                    <input class="form-control me-2 search-table" type="search" placeholder="Search table"
-                        aria-label="Search">
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table id="sales-products" class="table table-hover table-striped align-middle">
-                    <thead class="table-primary">
+                <form class="d-flex justify-content-end">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text border-0" id="search-addon">start date</i></span>
+                        <input required type="date" name="start_date" class="form-control rounded" id="startDate"
+                            onchange="updateMinEndDate()"
+                            min="{{ Carbon::parse($sales->min('date'))->format('Y-m-d') }}"max="{{ Carbon::parse($sales->max('date'))->format('Y-m-d') }}"
+                            aria-label="Search" aria-describedby="search-addon" />
+                        <span class="input-group-text border-0" id="search-addon">end date</i></span>
+                        <input required type="date" name="end_date" class="form-control rounded" id="endDate"
+                            max="{{ Carbon::parse($sales->max('date'))->format('Y-m-d') }}" aria-label="Search"
+                            aria-describedby="search-addon" />
+                        <button type="submit" class="btn btn-primary mx-2 rounded-1">filter</button>
+                    </div>
+                @section('script')
+                    <script>
+                        function updateMinEndDate() {
+                            const startDate = document.getElementById('startDate').value;
+                            document.getElementById('endDate').min = startDate;
+                        }
+                    </script>
+                @endsection
+            </form>
+        </div>
+        <div class="table-responsive">
+            <table id="sales-products" class="table table-hover table-striped align-middle">
+                <thead class="table-primary">
+                    <tr>
+                        <th scope="col">S/N</th>
+                        <th scope="col">Customer</th>
+                        {{-- <th scope="col">Product Name</th> --}}
+                        <th scope="col">Item Count</th>
+                        <th scope="col">Total Amount</th>
+                        <th scope="col">Payment Mode</th>
+                        <th scope="col">Payment Status</th>
+                        <th scope="col">Date</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($sales as $sale)
                         <tr>
-                            <th scope="col">S/N</th>
-                            <th scope="col">Customer</th>
-                            {{-- <th scope="col">Product Name</th> --}}
-                            <th scope="col">Item Count</th>
-                            <th scope="col">Total Amount</th>
-                            <th scope="col">Payment Mode</th>
-                            <th scope="col">Payment Status</th>
-                            <th scope="col">Date</th>
-                            <th scope="col"></th>
+                            <td scope="row">{{ $loop->iteration }}</td>
+                            <td>
+                                {{ $sale->customer->name }}
+                            </td>
+                            {{-- <td>{{ $sale->product->name }}</td> --}}
+                            <td>{{ $sale->salesItems->count() }}</td>
+                            <td>{{ 'GHS ' . number_format($sale->total, 2) }}</td>
+                            <td>{{ $sale->paymentMethod->name }}</td>
+                            <td>{{ $sale->sales_status_id == 1 ? 'OK' : 'N/A' }}</td>
+                            <td>{{ Carbon::parse($sale->created_at)->format('Y/m/d H:i A') }}
+                            </td>
+                            <td>
+                                <div class="d-flex">
+                                    <a href="{{ route('sales.show', $sale->id) }}" title="click to view items" type="button"
+                                        class="btn btn-primary mx-1">
+                                        view
+                                    </a>
+                                    <button onclick="return null;" title="Click to print receipt"
+                                        class="btn btn-sm btn-success mx-1" type="button"
+                                        data-sale_id="{{ $sale->id }}">
+                                        <i class="fas fa-print"></i>
+                                        print
+                                    </button>
+                                </div>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($sales as $sale)
-                            <tr>
-                                <td scope="row">{{ $loop->iteration }}</td>
-                                <td>
-                                    {{ $sale->customer->name }}
-                                </td>
-                                {{-- <td>{{ $sale->product->name }}</td> --}}
-                                <td>{{ $sale->salesItems->count() }}</td>
-                                <td>{{ 'GHS ' . number_format($sale->total, 2) }}</td>
-                                <td>{{ $sale->paymentMethod->name }}</td>
-                                <td>{{ $sale->sales_status_id == 1 ? 'OK' : 'N/A' }}</td>
-                                <td>{{ Carbon::parse($sale->date)->longRelativeToNowDiffForHumans() }}
-                                </td>
-                                <td>
-                                    <div class="d-flex">
-                                        <a href="{{ route('products.edit', $sale->id) }}" type="button"
-                                            class="btn btn-primary mx-1 disabled">
-                                            view
-                                        </a>
-                                        <button onclick="return null;" title="Click to print receipt"
-                                            class="btn btn-sm btn-success mx-1" type="button"
-                                            data-sale_id="{{ $sale->id }}">
-                                            <i class="fas fa-print"></i>
-                                            print
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                        @endforelse
+                    @empty
+                    @endforelse
 
-                    </tbody>
-                </table>
-            </div>
+                </tbody>
+            </table>
         </div>
     </div>
-    <script>
-        $(document).ready(function() {
-            var sales_table = new DataTable('#sales-products', {
-                select: false,
-                serverSide: false,
-                processing: true,
-                lengthChange: false,
-                searching: false,
-                scrollY: $(window).height() / 1.8,
-                fixedHeader: {
-                    headerOffset: $('nav').outerHeight(true) + 45,
-                },
 
-                // dom: 'Brt<"row"<"col-sm-6"i><"col-sm-6"p>>',
-                pageLength: 35,
-                buttons: [{
-                        extend: 'excel',
-                        title: 'My Report',
-                        filename: 'my-report',
-                        text: '<i class="fas fa-print me-1"></i> excel',
-                        className: 'btn text-white ms-1',
-                        message: 'Printed on ' + new Date().toLocaleString(),
-                        attr: {
-                            "style": 'background-color: #438162;color: #fff',
-                            "data-mdb-ripple-init": '',
-                        },
-                        exportOptions: {
-                            columns: ':visible'
-                        }
+</div>
+<script>
+    $(document).ready(function() {
+        var sales_table = new DataTable('#sales-products', {
+            select: false,
+            serverSide: false,
+            processing: true,
+            lengthChange: false,
+            // searching: false,
+            scrollY: $(window).height() / 1.8,
+            fixedHeader: {
+                headerOffset: $('nav').outerHeight(true) + 45,
+            },
+
+            // dom: 'Brt<"row"<"col-sm-6"i><"col-sm-6"p>>',
+            pageLength: 35,
+            buttons: [{
+                    extend: 'excel',
+                    title: 'sales',
+                    filename: 'my-report',
+                    text: '<i class="fas fa-print me-1"></i> excel',
+                    className: 'btn text-white ms-1',
+                    message: 'Printed on ' + new Date().toLocaleString(),
+                    attr: {
+                        "style": 'background-color: #438162;color: #fff',
+                        "data-mdb-ripple-init": '',
                     },
-                    {
-                        extend: 'pdf',
-                        title: 'My PDF Report',
-                        filename: 'my-pdf-report',
-                        orientation: 'portrait',
-                        pageSize: 'A4',
-                        text: '<i class="fas fa-print me-1"></i> pdf',
-                        className: 'btn text-white ms-1',
-                        message: 'Printed on ' + new Date().toLocaleString(),
-                        attr: {
-                            "style": 'background-color: #ee4a60;color: #fff',
-                            "data-mdb-ripple-init": '',
-                        }
-                    },
-                    {
-                        extend: 'print',
-                        text: '<i class="fas fa-print me-1"></i> print',
-                        className: 'btn text-white ms-1',
-                        title: 'My Printed Report',
-                        pageSize: 'A4',
-                        orientation: 'landscape',
-                        message: 'Printed on ' + new Date().toLocaleString(),
-                        attr: {
-                            "style": 'background-color: #44abff;color: #fff',
-                            "data-mdb-ripple-init": '',
-                        }
+                    exportOptions: {
+                        columns: ':visible'
                     }
-                ],
-                language: {
-                    paginate: {
-                        first: 'First',
-                        previous: 'Prev',
-                        next: 'Next',
-                        last: 'Last',
+                },
+                {
+                    extend: 'pdf',
+                    title: 'My PDF Report',
+                    filename: 'my-pdf-report',
+                    orientation: 'portrait',
+                    pageSize: 'A4',
+                    text: '<i class="fas fa-print me-1"></i> pdf',
+                    className: 'btn text-white ms-1',
+                    message: 'Printed on ' + new Date().toLocaleString(),
+                    attr: {
+                        "style": 'background-color: #ee4a60;color: #fff',
+                        "data-mdb-ripple-init": '',
+                    }
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="fas fa-print me-1"></i> print',
+                    className: 'btn text-white ms-1',
+                    title: '<h4 class="h4 text-center">{{ env('APP_NAME') }}</h4>        <p class="mb-0 text-center text-uppercase">sales</p>',
+                    pageSize: 'A4',
+                    orientation: 'landscape',
+                    message: 'Printed on ' + new Date().toLocaleString(),
+                    attr: {
+                        "style": 'background-color: #44abff;color: #fff',
+                        "data-mdb-ripple-init": '',
                     }
                 }
-            });
-            $('#pdfButton').on('click', function() {
-                sales_table.button(1).trigger();
-            });
-
-            $('#excelButton').on('click', function() {
-                sales_table.buttons(0).trigger();
-            });
-            $('#printButton').on('click', function() {
-                sales_table.button(2).trigger();
-            });
-            $('.search-table').on('keyup', function() {
-                sales_table.search(this.value).draw();
-            });
+            ],
+            language: {
+                paginate: {
+                    first: 'First',
+                    previous: 'Prev',
+                    next: 'Next',
+                    last: 'Last',
+                }
+            }
         });
-    </script>
+        $('#pdfButton').on('click', function() {
+            sales_table.button(1).trigger();
+        });
+
+        $('#excelButton').on('click', function() {
+            sales_table.buttons(0).trigger();
+        });
+        $('#printButton').on('click', function() {
+            sales_table.button(2).trigger();
+        });
+        $('.search-table').on('keyup', function() {
+            sales_table.search(this.value).draw();
+        });
+    });
+</script>
 @endsection

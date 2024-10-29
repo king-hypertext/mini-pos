@@ -62,7 +62,7 @@
                             <th scope="col">Expiry Date</th>
                             <th scope="col"></th>
                         </tr>
-                    </thead> 
+                    </thead>
                     <tbody>
                         @forelse ($products as $product)
                             <tr class="text-capitalize">
@@ -77,7 +77,7 @@
                                 <td>{{ $product->category?->name ?? 'N/A' }}</td>
                                 <td>{{ $product->price }}</td>
                                 <td>{{ $product->quantity }}</td>
-                                <td>{{ Carbon::parse($product->expiry_date)->longRelativeToNowDiffForHumans() }}
+                                <td>{{ Carbon::parse($product->expiry_date)->format('Y/m/d') }}
                                 </td>
                                 <td>
                                     <div class="d-flex">
@@ -170,6 +170,90 @@
                         }
                     });
                 });
+            });
+            const product_table = new DataTable('#table-products', {
+                select: false,
+                serverSide: false,
+                processing: true,
+                lengthChange: false,
+                searching: false,
+                scrollY: $(window).height() / 1.8,
+                fixedHeader: {
+                    headerOffset: $('nav').outerHeight(true) + 45,
+                },
+
+                // dom: 'Brt<"row"<"col-sm-6"i><"col-sm-6"p>>',
+                pageLength: 35,
+                buttons: [{
+                        extend: 'excel',
+                        title: 'My Report',
+                        filename: 'my-report',
+                        text: '<i class="fas fa-print me-1"></i> excel',
+                        className: 'btn text-white ms-1',
+                        message: 'Printed on ' + new Date().toLocaleString(),
+                        attr: {
+                            "style": 'background-color: #438162;color: #fff',
+                            "data-mdb-ripple-init": '',
+                        },
+                        exportOptions: {
+                            columns: [0, 2, 3, 4, 5, 6, 7]
+                        }
+                    },
+                    {
+                        extend: 'pdf',
+                        title: 'My PDF Report',
+                        filename: 'my-pdf-report',
+                        orientation: 'portrait',
+                        pageSize: 'A4',
+                        text: '<i class="fas fa-print me-1"></i> pdf',
+                        className: 'btn text-white ms-1',
+                        message: 'Printed on ' + new Date().toLocaleString(),
+                        attr: {
+                            "style": 'background-color: #ee4a60;color: #fff',
+                            "data-mdb-ripple-init": '',
+                        },
+                        exportOptions: {
+                            columns: [0, 2, 3, 4, 5, 6, 7]
+                        }
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i class="fas fa-print me-1"></i> print',
+                        className: 'btn text-white ms-1',
+                        title: 'My Printed Report',
+                        pageSize: 'A4',
+                        orientation: 'landscape',
+                        message: 'Printed on ' + new Date().toLocaleString(),
+                        attr: {
+                            "style": 'background-color: #44abff;color: #fff',
+                            "data-mdb-ripple-init": '',
+                        },
+                        exportOptions: {
+                            columns: [0, 2, 3, 4, 5, 6, 7]
+                        }
+                    }
+                ],
+                language: {
+                    paginate: {
+                        first: 'First',
+                        previous: 'Prev',
+                        next: 'Next',
+                        last: 'Last',
+                    }
+                }
+            });
+            $('#pdfButton').on('click', function() {
+                product_table.button(1).trigger();
+            });
+
+            $('#excelButton').on('click', function() {
+                product_table.buttons(0).trigger();
+            });
+            $('#printButton').on('click', function() {
+                product_table.button(2).trigger();
+            });
+            $('input.search-table').on('keyup', function() {
+                product_table.search(this.value).draw();
             });
         });
     </script>

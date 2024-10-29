@@ -20,15 +20,15 @@
                 </a>
             </li>
             <li class="nav-menu">
-                <a href="#" class="nav-menu-link">
-                    <i class="fa fa-gear fa-spin nav-menu-icon"></i>
-                    <span class="nav-menu-name">settings</span>
+                <a href="{{ route('sales.index') }}" class="nav-menu-link">
+                    <i class="fa-solid fa-money-bill-trend-up nav-menu-icon"></i>
+                    <span class="nav-menu-name">Sales</span>
                 </a>
             </li>
             <li class="nav-menu">
-                <a href="{{route('sales.index')}}" class="nav-menu-link">
-                    <i class="fa-solid fa-money-bill-trend-up nav-menu-icon"></i>
-                    <span class="nav-menu-name">Sales</span>
+                <a href="{{ route('settings') }}" class="nav-menu-link">
+                    <i class="fa fa-gear fa-spin nav-menu-icon"></i>
+                    <span class="nav-menu-name">settings</span>
                 </a>
             </li>
         </ul>

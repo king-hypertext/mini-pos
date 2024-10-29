@@ -7,7 +7,10 @@ use App\Http\Requests\StoreSaleRequest;
 use App\Http\Requests\UpdateSaleRequest;
 use App\Models\Customer;
 use App\Models\PaymentMethod;
+use App\Models\Product;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\Printer;
 
@@ -16,9 +19,18 @@ class SaleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $sales = Sale::all();
+        $sales = Sale::orderBy('created_at', 'desc')->get();
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $request->validate([
+                'start_date' => 'date',
+                'end_date' => 'date',
+            ]);
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $sales = Sale::whereBetween('date', [$start_date, $end_date])->orderBy('created_at', 'desc')->get();
+        }
         return view('sales.index', compact('sales'));
     }
 
@@ -36,46 +48,42 @@ class SaleController extends Controller
     public function store(StoreSaleRequest $request)
     {
         $request->validated();
-        // $request->dd();
-        $data = $request->cart;
 
-        $customer = Customer::firstOrCreate(['name' => $request->customer]);
-        $payment_method = $request->payment_method;
+        DB::transaction(function () use ($request) {
+            $data = $request->cart;
+            $customer = Customer::firstOrCreate(['id' => $request->customer], ['name' => $request->customer]);
+            $payment_method = $request->payment_method;
 
-        $sale = Sale::create([
-            'date' => now(),
-            'total' => $request->subtotal,
-            'customer_id' => $customer->id,
-            'payment_method_id' => $payment_method,
-            'sales_status_id' => 1,
-        ]);
-
-        foreach ($data as $item) {
-            $sale->salesItems()->create([
-                'sale_id' => $sale->id,
-                'product_id' => $item['id'],
-                'quantity' => $item['quantity'],
-                'unit_price' => $item['price'],
-                'subtotal' => $item['price'] * $item['quantity'],
+            $sale = Sale::create([
+                'date' => now(),
+                'total' => $request->subtotal,
+                'customer_id' => $customer->id,
+                'payment_method_id' => $payment_method,
+                'sales_status_id' => 1,
             ]);
-        }
 
-        // for ($i = 0; $i < count($data); $i++) {
-        //     Sale::create([
-        //         'product_id' => $data[$i]['id'],
-        //         'price' => $data[$i]['price'],
-        //         'quantity' => $data[$i]['quantity'],
-        //         // 'amount' => (int)$data[$i]['price'] * (int)$data[$i]['quantity'],
-        //         'date' => now(),
-        //     ]);
-        // }
-        $pdf = Pdf::loadView('sales.print', ['sale' => $sale, 'sale_items' => $sale->salesItems]);
-        $pdf->setPaper('thermal');
-        $pdf->save('pdf.pdf', 'public');
-        // $connector = new FilePrintConnector("/dev/usb/lp0");
-        // $printer = new Printer($connector);
-        // $printer->text($pdf->output());
-        // $printer->cut();
+            foreach ($data as $item) {
+                $product = Product::find($item['id']);
+
+                // Decrement product quantity
+                $product->decrement('quantity', $item['quantity']);
+
+                $sale->salesItems()->create([
+                    'sale_id' => $sale->id,
+                    'product_id' => $item['id'],
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $item['price'],
+                    'subtotal' => $item['price'] * $item['quantity'],
+                ]);
+            }
+            $pdf = Pdf::loadView('sales.print', ['sale' => $sale, 'sale_items' => $sale->salesItems]);
+            $pdf->setPaper('thermal');
+            $pdf->save('pdf.pdf', 'public');
+            // $connector = new FilePrintConnector("/dev/usb/lp0");
+            // $printer = new Printer($connector);
+            // $printer->text($pdf->output());
+            // $printer->cut();
+        });
         return response()->json([
             'success' => true,
             'message' => 'Order created successfully',
@@ -88,7 +96,7 @@ class SaleController extends Controller
      */
     public function show(Sale $sale)
     {
-        //
+        return view('sales.show', compact('sale'));
     }
 
     /**

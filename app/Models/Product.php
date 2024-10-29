@@ -22,6 +22,7 @@ class Product extends Model
         'brand_id',
         'category_id',
     ];
+    // protected $withCount/
     public function cart()
     {
         return $this->hasMany(Cart::class);

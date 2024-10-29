@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="{{ asset('asset/custom/stylesheet.css') }}">
     <script src="{{ asset('asset/jquery/external/jquery.js') }}"></script>
     <script src="{{ asset('asset/alert/sweetalert2.all.min.js') }}"></script>
-    <title>{{ $page_title ?? 'Q-POS' }}</title>
+    <title>Q-POS |  {{$page_title ?? 'MENU' }}</title>
     <style>
         .preloader {
             z-index: 1099;
@@ -245,7 +245,6 @@
         @include('layout.nav')
         <div class="container">
             @yield('content')
-            <button id="test" class="btn btn-close-white">test cart</button>
         </div>
         <aside class="right-menu bg-white shadow-2-soft">
             <section class="container overflow-y-auto mt-4 perfect-scrollbar" style="height: calc(100% - 300px)">
@@ -269,16 +268,27 @@
                 </div>
             </section>
             {{-- <div class="container"> --}}
+            @use(App\Models\PaymentMethod)
+            @use(App\Models\Customer)
+            @php
+                $payment_modes = PaymentMethod::all();
+                $customers = Customer::all();
+            @endphp
             <div class="cart-footer">
                 <div class="mb-3">
                     <label for="customer" class="form-label">Customer Name</label>
-                    <input type="text" class="form-control" name="customer" id="customer"
-                        placeholder="Enter customer name" />
+                    <select class="form-select form-select-lg select2-dynamic" name="customer" id="customer">
+                        <option></option>
+                        @forelse ($customers as $customer)
+                            <option value="{{ $customer->id }}">
+                                {{ $customer->name }}
+                            </option>
+                        @empty
+                        @endforelse
+                    </select>
+                    {{-- <input type="text" class="form-control" name="customer" id="customer"
+                        placeholder="Enter customer name" /> --}}
                 </div>
-                @use(App\Models\PaymentMethod)
-                @php
-                    $payment_modes = PaymentMethod::all();
-                @endphp
                 <div class="mb-3">
                     <div class="mb-3">
                         <label for="payment_method" class="form-label">Payment mode</label>
@@ -386,84 +396,6 @@
     <script src="{{ asset('asset/select2/js/select2.min.js') }}"></script>
     <script src="{{ asset('asset/custom/script.js') }}"></script>
     <script>
-        const product_table = new DataTable('#table-products', {
-            select: false,
-            serverSide: false,
-            processing: true,
-            lengthChange: false,
-            searching: false,
-            scrollY: $(window).height() / 1.8,
-            fixedHeader: {
-                headerOffset: $('nav').outerHeight(true) + 45,
-            },
-
-            // dom: 'Brt<"row"<"col-sm-6"i><"col-sm-6"p>>',
-            pageLength: 35,
-            buttons: [{
-                    extend: 'excel',
-                    title: 'My Report',
-                    filename: 'my-report',
-                    text: '<i class="fas fa-print me-1"></i> excel',
-                    className: 'btn text-white ms-1',
-                    message: 'Printed on ' + new Date().toLocaleString(),
-                    attr: {
-                        "style": 'background-color: #438162;color: #fff',
-                        "data-mdb-ripple-init": '',
-                    },
-                    exportOptions: {
-                        columns: ':visible'
-                    }
-                },
-                {
-                    extend: 'pdf',
-                    title: 'My PDF Report',
-                    filename: 'my-pdf-report',
-                    orientation: 'portrait',
-                    pageSize: 'A4',
-                    text: '<i class="fas fa-print me-1"></i> pdf',
-                    className: 'btn text-white ms-1',
-                    message: 'Printed on ' + new Date().toLocaleString(),
-                    attr: {
-                        "style": 'background-color: #ee4a60;color: #fff',
-                        "data-mdb-ripple-init": '',
-                    }
-                },
-                {
-                    extend: 'print',
-                    text: '<i class="fas fa-print me-1"></i> print',
-                    className: 'btn text-white ms-1',
-                    title: 'My Printed Report',
-                    pageSize: 'A4',
-                    orientation: 'landscape',
-                    message: 'Printed on ' + new Date().toLocaleString(),
-                    attr: {
-                        "style": 'background-color: #44abff;color: #fff',
-                        "data-mdb-ripple-init": '',
-                    }
-                }
-            ],
-            language: {
-                paginate: {
-                    first: 'First',
-                    previous: 'Prev',
-                    next: 'Next',
-                    last: 'Last',
-                }
-            }
-        });
-        $('#pdfButton').on('click', function() {
-            product_table.button(1).trigger();
-        });
-
-        $('#excelButton').on('click', function() {
-            product_table.buttons(0).trigger();
-        });
-        $('#printButton').on('click', function() {
-            product_table.button(2).trigger();
-        });
-        $('input.search-table').on('keyup', function() {
-            product_table.search(this.value).draw();
-        });
         const ps = new PerfectScrollbar('.perfect-scrollbar');
         $('.select2').select2({
             width: '100%',
