@@ -463,7 +463,10 @@ function printCart() {
 
 //     }
 // });
-document.querySelector('button.confirm-btn').addEventListener('click', async () => {
+document.querySelector('button.confirm-btn').addEventListener('click', async (e) => {
+    let btn = e.target;
+
+
     const customer = document.querySelector('select[name="customer"]').value;
     const payment_method = document.querySelector('select[name="payment_method"]').value
     if (!customer) {
@@ -472,6 +475,8 @@ document.querySelector('button.confirm-btn').addEventListener('click', async () 
     }
     if (cart.countItems() > 0) {
         if (confirm("Confirm order and print out receipt?")) {
+            btn.classList.add('disabled');
+            document.querySelector('.preloader').style.display = 'block';
             // await fetch('/sales', {
             //     method: 'POST',
             //     headers: {
@@ -504,9 +509,13 @@ document.querySelector('button.confirm-btn').addEventListener('click', async () 
                         cart.clear();
                         window.open(data.url, '_self');
                     }
+                    btn.classList.remove('disabled');
+                    document.querySelector('.preloader').style.display = 'none';
                 },
                 error: function (error) {
                     console.error(error);
+                    btn.classList.remove('disabled');
+                    document.querySelector('.preloader').style.display = 'none';
                 }
             });
 

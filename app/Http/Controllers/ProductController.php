@@ -13,14 +13,21 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function autocompleteProductList(Request $request)
     {
+        $title = str_replace(['\\', '/', '.', '_', ',', '\''], ' ', $request->input('query'));
+        $data = Product::query()->name('title', 'LIKE', "%{$title}%")->get('name');
+        return response()->json($data);
+    }
+    public function index(Request $request)
+    {
+        $query = $request->query('q');
         $products = Product::all();
         $brands = Brand::all();
         $categories = Category::all();
+        if (isset($query)) {
+            $products = Product::where('name', 'LIKE', '%' . $query . '%')->paginate(10);
+        }
         return view('products.index', array('page_title' => env('APP_NAME') . ' | ALL PRODUCTS', 'products' => $products, 'brands' => $brands, 'categories' => $categories));
     }
 

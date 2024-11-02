@@ -13,13 +13,14 @@ return new class extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
+            $table->string('sale_number', 10)->unique();
             $table->date('date')->useCurrent();
             $table->decimal('total', 10, 2);
             $table->foreignId('customer_id')->constrained();
             $table->foreignId('payment_method_id')->constrained();
-            $table->foreignId('sales_status_id')->default(1)->constrained();        
+            $table->foreignId('sales_status_id')->default(1)->constrained();
             $table->timestamps();
-        }); 
+        });
     }
 
     /**

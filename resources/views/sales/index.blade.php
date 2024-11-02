@@ -71,7 +71,7 @@
                     <tr>
                         <th scope="col">S/N</th>
                         <th scope="col">Customer</th>
-                        {{-- <th scope="col">Product Name</th> --}}
+                        <th scope="col">Sale Number</th>
                         <th scope="col">Item Count</th>
                         <th scope="col">Total Amount</th>
                         <th scope="col">Payment Mode</th>
@@ -87,7 +87,7 @@
                             <td>
                                 {{ $sale->customer->name }}
                             </td>
-                            {{-- <td>{{ $sale->product->name }}</td> --}}
+                            <td>{{ $sale->sale_number }}</td>
                             <td>{{ $sale->salesItems->count() }}</td>
                             <td>{{ 'GHS ' . number_format($sale->total, 2) }}</td>
                             <td>{{ $sale->paymentMethod->name }}</td>
@@ -96,16 +96,16 @@
                             </td>
                             <td>
                                 <div class="d-flex">
-                                    <a href="{{ route('sales.show', $sale->id) }}" title="click to view items" type="button"
+                                    <a href="{{ route('sales.show', $sale->id) }}" target="_blank" title="click to view items" type="button"
                                         class="btn btn-primary mx-1">
                                         view
                                     </a>
-                                    <button onclick="return null;" title="Click to print receipt"
-                                        class="btn btn-sm btn-success mx-1" type="button"
+                                    {{-- <button onclick="return null;" title="Click to print receipt"
+                                        class="btn btn-sm btn-success mx-1 text-nowrap" type="button"
                                         data-sale_id="{{ $sale->id }}">
                                         <i class="fas fa-print"></i>
                                         print
-                                    </button>
+                                    </button> --}}
                                 </div>
                             </td>
                         </tr>

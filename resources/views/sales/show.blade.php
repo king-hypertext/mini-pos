@@ -88,7 +88,7 @@
             <p>{{ env('APP_STORE_NAME') }}</p>
             <p>Date: {{ now()->format('d F Y h:i A') }}</p>
         </header>
-        <strong>#0002188</strong>
+        <strong>#{{ $sale->sale_number }}</strong>
         <table>
             <thead>
                 <tr>
@@ -123,6 +123,15 @@
             <p>Thank you for your purchase!</p>
         </footer>
     </div>
+    <script>
+        window.print();
+
+        // Listen for the afterprint event
+        window.onafterprint = function() {
+            // Close the window
+            window.close();
+        };
+    </script>
 </body>
 
 </html>

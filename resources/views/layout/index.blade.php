@@ -405,8 +405,6 @@
             width: '100%',
             tags: true,
             createTag: function(params) {
-                console.log(params);
-
                 return {
                     id: params.term,
                     text: params.term,

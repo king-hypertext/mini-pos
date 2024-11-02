@@ -53,8 +53,13 @@ class SaleController extends Controller
             $data = $request->cart;
             $customer = Customer::firstOrCreate(['id' => $request->customer], ['name' => $request->customer]);
             $payment_method = $request->payment_method;
-
+            $saleNumber = random_int(1000000000, 9999999999);
+            // Generate a unique number until it is not already in the database
+            while (Sale::where('sale_number', $saleNumber)->exists()) {
+                $saleNumber = random_int(1000000000, 9999999999);
+            }
             $sale = Sale::create([
+                'sale_number' => $saleNumber,
                 'date' => now(),
                 'total' => $request->subtotal,
                 'customer_id' => $customer->id,
@@ -64,7 +69,6 @@ class SaleController extends Controller
 
             foreach ($data as $item) {
                 $product = Product::find($item['id']);
-
                 // Decrement product quantity
                 $product->decrement('quantity', $item['quantity']);
 

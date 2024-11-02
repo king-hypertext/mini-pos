@@ -3,7 +3,7 @@
     <div class="card shadow-1">
         <div class="card-body">
             <div class="row">
-                <div class="col-auto col-sm-3">
+                <div class="col-auto col-sm-3 gy-3">
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex align-items-center">
@@ -18,7 +18,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-auto col-sm-3">
+                <div class="col-auto col-sm-3 gy-3">
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex align-items-center">
@@ -33,7 +33,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-auto col-sm-3">
+                <div class="col-auto col-sm-3 gy-3">
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex align-items-center">
@@ -48,7 +48,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-auto col-sm-3">
+                <div class="col-auto col-sm-3 gy-3">
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex align-items-center">
@@ -57,12 +57,30 @@
                                 </div>
                                 <div class="col-sm-8">
                                     <h5 class="card-title text-uppercase">customers</h5>
-                                    <p class="card-text">Total: {{$customers}}</p>
+                                    <p class="card-text">Total: {{ $customers }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <div class="col-auto col-sm-3 gy-3">
+                    <div class="card bg-success-subtle">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                {{-- <div class="col-sm-4">
+                                    <i class="fas fa-user-tag fa-2x text-primary mr-3"></i>
+                                </div> --}}
+                                <div class="col-sm-12">
+                                    <h5 class="card-title text-uppercase">top-selling product</h5>
+                                    <p class="card-text"><strong class="text-uppercase">{{ $topSelllingProduct }}</strong>
+                                        (since last 7 days)
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
