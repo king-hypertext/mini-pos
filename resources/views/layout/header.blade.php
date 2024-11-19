@@ -7,8 +7,8 @@
             </a>
             <form action="{{ route('products.index') }}" method="get">
                 <div class="group">
-                    <input type="search" id="search-input" class="form-control" placeholder="Search products... '/' to focus"
-                        name="q" />
+                    <input type="search" id="search-input" class="form-control"
+                        placeholder="Search products... '/' to focus" name="q" />
                     {{-- <label for="search-input" class="form-label">Search products...</label> --}}
                     <i class="fas fa-search right"></i>
                 </div>
@@ -20,11 +20,11 @@
                     <i class="fas fa-refresh nav-menu-icon"></i>
                 </button>
             </li>
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a class="nav-link" href="#">Link</a>
-            </li>
+            </li> --}}
             <li class="nav-item">
-                <a class="nav-link disabled" href="#">Disabled link</a>
+                <a class="nav-link fw-semibold text-uppercase" href="#">{{ $user->username }}</a>
             </li>
         </ul>
     </div>

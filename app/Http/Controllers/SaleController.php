@@ -8,8 +8,10 @@ use App\Http\Requests\UpdateSaleRequest;
 use App\Models\Customer;
 use App\Models\PaymentMethod;
 use App\Models\Product;
+use App\Models\ReturnSale;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\Printer;
@@ -31,7 +33,8 @@ class SaleController extends Controller
             $end_date = $request->end_date;
             $sales = Sale::whereBetween('date', [$start_date, $end_date])->orderBy('created_at', 'desc')->get();
         }
-        return view('sales.index', compact('sales'));
+        $page_title = 'Sales';
+        return view('sales.index', compact('sales', 'page_title'));
     }
 
     /**
@@ -65,6 +68,7 @@ class SaleController extends Controller
                 'customer_id' => $customer->id,
                 'payment_method_id' => $payment_method,
                 'sales_status_id' => 1,
+                'user_id' => Auth::id()
             ]);
 
             foreach ($data as $item) {
@@ -114,7 +118,7 @@ class SaleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateSaleRequest $request, Sale $sale)
+    public function update(Sale $sale)
     {
         //
     }
@@ -124,8 +128,40 @@ class SaleController extends Controller
      */
     public function destroy(Sale $sale)
     {
-        //
+        if (!$sale || $sale->salesItems->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sale not found or has no items',
+            ], 404);
+        }
+
+        DB::transaction(function () use ($sale) {
+            $returnSale = ReturnSale::create([
+                'sale_number' => $sale->sale_number,
+                'total' => $sale->total,
+                'customer_id' => $sale->customer_id,
+                'user_id' => Auth::id(),
+            ]);
+
+            foreach ($sale->salesItems as $saleItem) {
+                $saleItem->product->increment('quantity', $saleItem->quantity);
+                $returnSale->returnSaleItems()->create([
+                    'product_id' => $saleItem->product_id,
+                    'quantity' => $saleItem->quantity,
+                    'unit_price' => $saleItem->unit_price,
+                    'total' => $saleItem->subtotal,
+                ]);
+            }
+            $sale->delete();
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Sale removed successfully',
+            'url' => back()->with('success', 'Sale removed successfully')->getTargetUrl(),
+        ]);
     }
+
     public function Print(int $id)
     {
         // return view('sales.print');

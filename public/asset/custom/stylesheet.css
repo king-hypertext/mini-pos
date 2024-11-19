@@ -34,7 +34,7 @@
 
 main {
     margin-right: 400px !important;
-    margin-left: 60px !important;
+    /* margin-left: 60px !important; */
 }
 
 .right-menu {
@@ -45,6 +45,7 @@ main {
     width: 100%;
     max-width: 400px;
     z-index: 99;
+    margin-left: auto;
 }
 
 .nav-menu {

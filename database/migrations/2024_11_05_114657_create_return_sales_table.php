@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sales', function (Blueprint $table) {
+        Schema::create('return_sales', function (Blueprint $table) {
             $table->id();
-            $table->string('sale_number', 10)->unique();
-            $table->date('date')->useCurrent();
-            $table->decimal('total', 10, 2);
+            $table->string('sale_number', 10);
             $table->foreignId('customer_id')->constrained();
-            $table->foreignId('payment_method_id')->constrained();
-            $table->foreignId('sales_status_id')->default(1)->constrained();
+            $table->decimal('total', 10, 2);
             $table->foreignId('user_id')->constrained();
             $table->timestamps();
         });
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sales');
+        Schema::dropIfExists('return_sales');
     }
 };

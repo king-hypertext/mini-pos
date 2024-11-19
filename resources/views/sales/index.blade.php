@@ -65,57 +65,60 @@
                 @endsection
             </form>
         </div>
-        <div class="table-responsive">
-            <table id="sales-products" class="table table-hover table-striped align-middle">
-                <thead class="table-primary">
-                    <tr>
-                        <th scope="col">S/N</th>
-                        <th scope="col">Customer</th>
-                        <th scope="col">Sale Number</th>
-                        <th scope="col">Item Count</th>
-                        <th scope="col">Total Amount</th>
-                        <th scope="col">Payment Mode</th>
-                        <th scope="col">Payment Status</th>
-                        <th scope="col">Date</th>
-                        <th scope="col"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($sales as $sale)
-                        <tr>
-                            <td scope="row">{{ $loop->iteration }}</td>
-                            <td>
-                                {{ $sale->customer->name }}
-                            </td>
-                            <td>{{ $sale->sale_number }}</td>
-                            <td>{{ $sale->salesItems->count() }}</td>
-                            <td>{{ 'GHS ' . number_format($sale->total, 2) }}</td>
-                            <td>{{ $sale->paymentMethod->name }}</td>
-                            <td>{{ $sale->sales_status_id == 1 ? 'OK' : 'N/A' }}</td>
-                            <td>{{ Carbon::parse($sale->created_at)->format('Y/m/d H:i A') }}
-                            </td>
-                            <td>
-                                <div class="d-flex">
-                                    <a href="{{ route('sales.show', $sale->id) }}" target="_blank" title="click to view items" type="button"
-                                        class="btn btn-primary mx-1">
-                                        view
-                                    </a>
-                                    {{-- <button onclick="return null;" title="Click to print receipt"
-                                        class="btn btn-sm btn-success mx-1 text-nowrap" type="button"
-                                        data-sale_id="{{ $sale->id }}">
-                                        <i class="fas fa-print"></i>
-                                        print
-                                    </button> --}}
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                    @endforelse
-
-                </tbody>
-            </table>
-        </div>
     </div>
+    <div class="table-responsive">
+        <table id="sales-products" class="table table-hover table-striped align-middle">
+            <thead class="table-primary">
+                <tr>
+                    <th scope="col">S/N</th>
+                    <th scope="col">Customer</th>
+                    <th scope="col">Receipt No</th>
+                    <th scope="col">Items Count</th>
+                    <th scope="col">Total</th>
+                    <th scope="col">Payment Mode</th>
+                    <th scope="col">Payment Status</th>
+                    <th scope="col">Date</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($sales as $sale)
+                    <tr>
+                        <td scope="row">{{ $loop->iteration }}</td>
+                        <td>
+                            {{ $sale->customer->name }}
+                        </td>
+                        <td>{{ $sale->sale_number }}</td>
+                        <td>{{ $sale->salesItems->count() }}</td>
+                        <td>{{ 'GHS ' . number_format($sale->total, 2) }}</td>
+                        <td>{{ $sale->paymentMethod->name }}</td>
+                        <td>{{ $sale->sales_status_id == 1 ? 'OK' : 'N/A' }}</td>
+                        <td>{{ Carbon::parse($sale->created_at)->format('Y/m/d h:i A') }}
+                        </td>
+                        <td>
+                            <div class="d-flex">
+                                <a href="{{ route('sales.show', $sale->id) }}" target="_blank"
+                                    title="click to print items" type="button"
+                                    class="btn btn-primary mx-1 text-nowrap">
+                                    <i class="fas fa-print"></i>
+                                    print
+                                </a>
+                                <button id="return-sales" title="Return sales"
+                                    class="btn btn-sm btn-success mx-1 text-nowrap" type="button"
+                                    data-sale_id="{{ $sale->id }}">
+                                    <i class="fas fa-repeat"></i>
+                                    return
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                @endforelse
+
+            </tbody>
+        </table>
+    </div>
+</div>
 
 </div>
 <script>
@@ -135,8 +138,8 @@
             pageLength: 35,
             buttons: [{
                     extend: 'excel',
-                    title: 'sales',
-                    filename: 'my-report',
+                    title: 'Sales ',
+                    filename: 'sales@' + new Date().toDateString(),
                     text: '<i class="fas fa-print me-1"></i> excel',
                     className: 'btn text-white ms-1',
                     message: 'Printed on ' + new Date().toLocaleString(),
@@ -145,13 +148,13 @@
                         "data-mdb-ripple-init": '',
                     },
                     exportOptions: {
-                        columns: ':visible'
+                        columns: [0, 1, 2, 3, 4, 5, 6, 7]
                     }
                 },
                 {
                     extend: 'pdf',
-                    title: 'My PDF Report',
-                    filename: 'my-pdf-report',
+                    title: 'Sales',
+                    filename: 'sales@' + new Date().toDateString(),
                     orientation: 'portrait',
                     pageSize: 'A4',
                     text: '<i class="fas fa-print me-1"></i> pdf',
@@ -159,7 +162,10 @@
                     message: 'Printed on ' + new Date().toLocaleString(),
                     attr: {
                         "style": 'background-color: #ee4a60;color: #fff',
-                        "data-mdb-ripple-init": '',
+                        "data-mdb-ripple-init": true,
+                    },
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5, 6, 7]
                     }
                 },
                 {
@@ -168,11 +174,14 @@
                     className: 'btn text-white ms-1',
                     title: '<h4 class="h4 text-center">{{ env('APP_NAME') }}</h4>        <p class="mb-0 text-center text-uppercase">sales</p>',
                     pageSize: 'A4',
-                    orientation: 'landscape',
+                    // orientation: 'landscape',
                     message: 'Printed on ' + new Date().toLocaleString(),
                     attr: {
                         "style": 'background-color: #44abff;color: #fff',
                         "data-mdb-ripple-init": '',
+                    },
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5, 6, 7]
                     }
                 }
             ],
@@ -197,6 +206,35 @@
         });
         $('.search-table').on('keyup', function() {
             sales_table.search(this.value).draw();
+        });
+        $('button#return-sales').on('click', function() {
+            const sale_id = $(this).data('sale_id');
+            if (!confirm('Are you sure you want to return products for this sale?')) {
+                return false;
+            }
+            document.querySelector('.preloader').style.display = 'block';
+            console.log(sale_id);
+            $.ajax('{{ route('sales.index') }}' + '/' + sale_id, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="token"]').attr('content')
+                },
+                beforeSend: function() {
+                    // Show loading indicator
+                    $('.preloader').show();
+                },
+                success: function(data) {
+                    console.log(data);
+                    if (data.success) {
+                        window.open(data.url, '_self');
+                    }
+                    // document.querySelector('.preloader').style.display = 'none';
+                },
+                error: function(err) {
+                    console.log(err);
+
+                }
+            })
         });
     });
 </script>

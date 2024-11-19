@@ -26,6 +26,12 @@
                 </a>
             </li>
             <li class="nav-menu">
+                <a href="{{ route('returns.index') }}" class="nav-menu-link">
+                    <i class="fa-solid fa-repeat nav-menu-icon"></i>
+                    <span class="nav-menu-name">Returns</span>
+                </a>
+            </li>
+            <li class="nav-menu">
                 <a href="{{ route('settings') }}" class="nav-menu-link">
                     <i class="fa fa-gear fa-spin nav-menu-icon"></i>
                     <span class="nav-menu-name">settings</span>
@@ -34,7 +40,7 @@
         </ul>
         <div class="sidebar-footer">
             <li class="nav-menu">
-                <a href="{{ route('logout') }}" class="nav-menu-link">
+                <a id="signout" class="nav-menu-link" title="click to login">
                     <i class="fa-solid fa-right-to-bracket nav-menu-icon"></i>
                     <span>Sign out</span>
                 </a>
@@ -46,3 +52,20 @@
         </div>
     </div>
 </aside>
+<script>
+    $(document).ready(function() {
+        $('a#signout').click(function() {
+            $.ajax({
+                url: "{{ route('logout') }}",
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function() {
+                    window.location.href = "{{ route('login') }}";
+                }
+            });
+            return false; // to prevent the default link behavior from occurring
+        });
+    });
+</script>

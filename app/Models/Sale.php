@@ -15,6 +15,7 @@ class Sale extends Model
         'customer_id',
         'payment_method_id',
         'sales_status_id',
+        'user_id'
     ];
     public function product()
     {
@@ -28,9 +29,10 @@ class Sale extends Model
     {
         return $this->belongsTo(PaymentMethod::class);
     }
-    // public function paymentStatus(){
-
-    // }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
     public function scopeGetSalesByDate($query, $startDate, $endDate)
     {
         return $query->whereBetween('date', [$startDate, $endDate]);

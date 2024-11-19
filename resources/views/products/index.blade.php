@@ -43,10 +43,10 @@
                         print
                     </button>
                 </div>
-                <div class="d-flex align-items-center">
+                {{-- <div class="d-flex align-items-center">
                     <input class="form-control me-2 search-table" type="search" placeholder="Search products..."
                         aria-label="Search">
-                </div>
+                </div> --}}
             </div>
             <div class="table-responsive">
                 <table id="table-products" class="table table-hover table-striped align-middle">
@@ -81,10 +81,12 @@
                                 </td>
                                 <td>
                                     <div class="d-flex">
-                                        <a href="{{ route('products.edit', $product->id) }}" type="button"
-                                            class="btn btn-primary mx-1">
-                                            Edit
-                                        </a>
+                                        @if (Auth::user()->isAdmin())
+                                            <a href="{{ route('products.edit', $product->id) }}" type="button"
+                                                class="btn btn-primary mx-1">
+                                                Edit
+                                            </a>
+                                        @endif
                                         <button {{ $product->quantity < 1 ? 'disabled' : '' }} title="Add Product to Cart"
                                             class="btn btn-sm btn-danger mx-1 add-to-cart-button" type="button"
                                             data-qty="{{ $product->quantity }}" data-product="{{ $product->id }}">
@@ -101,7 +103,6 @@
                 </table>
             </div>
         </div>
-        {{-- @include('products.edit') --}}
     </div>
 @endsection
 @section('script')
@@ -176,7 +177,7 @@
                 serverSide: false,
                 processing: true,
                 lengthChange: false,
-                searching: false,
+                // searching: false,
                 scrollY: $(window).height() / 1.8,
                 fixedHeader: {
                     headerOffset: $('nav').outerHeight(true) + 45,
@@ -186,8 +187,8 @@
                 pageLength: 35,
                 buttons: [{
                         extend: 'excel',
-                        title: 'My Report',
-                        filename: 'my-report',
+                        title: 'Products List',
+                        filename: 'products.' + new Date().toDateString(),
                         text: '<i class="fas fa-print me-1"></i> excel',
                         className: 'btn text-white ms-1',
                         message: 'Printed on ' + new Date().toLocaleString(),
@@ -201,8 +202,8 @@
                     },
                     {
                         extend: 'pdf',
-                        title: 'My PDF Report',
-                        filename: 'my-pdf-report',
+                        title: 'Product List',
+                        filename: 'products.stock.' + new Date().toDateString(),
                         orientation: 'portrait',
                         pageSize: 'A4',
                         text: '<i class="fas fa-print me-1"></i> pdf',
@@ -220,7 +221,7 @@
                         extend: 'print',
                         text: '<i class="fas fa-print me-1"></i> print',
                         className: 'btn text-white ms-1',
-                        title: 'My Printed Report',
+                        title: 'Product List',
                         pageSize: 'A4',
                         orientation: 'landscape',
                         message: 'Printed on ' + new Date().toLocaleString(),

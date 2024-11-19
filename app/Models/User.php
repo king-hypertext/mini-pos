@@ -11,14 +11,26 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+    public function isEmployee()
+    {
+        return $this->role === 'employee';
+    }
+    public function sale()
+    {
+        return $this->hasMany(Sale::class);
+    }
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'email',
+        'username',
+        'role',
         'password',
     ];
 
@@ -40,7 +52,6 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }

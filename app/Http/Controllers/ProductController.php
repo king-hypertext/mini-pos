@@ -22,13 +22,13 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $query = $request->query('q');
-        $products = Product::all();
+        $products = Product::orderBy('quantity', 'DESC')->get();
         $brands = Brand::all();
         $categories = Category::all();
         if (isset($query)) {
-            $products = Product::where('name', 'LIKE', '%' . $query . '%')->paginate(10);
+            $products = Product::where('name', 'LIKE', '%' . $query . '%')->orderBy('quantity', 'DESC')->paginate(10);
         }
-        return view('products.index', array('page_title' => env('APP_NAME') . ' | ALL PRODUCTS', 'products' => $products, 'brands' => $brands, 'categories' => $categories));
+        return view('products.index', array('page_title' => env('APP_NAME') . ' ALL PRODUCTS', 'products' => $products, 'brands' => $brands, 'categories' => $categories));
     }
 
     /**

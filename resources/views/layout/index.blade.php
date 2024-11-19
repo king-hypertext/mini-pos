@@ -21,8 +21,8 @@
             background: rgba(0, 0, 0, 0.55);
             color: #ffffff;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            justify-content: center !important;
+            align-items: center !important;
             flex-direction: column;
             position: fixed;
             width: 100%;
@@ -169,8 +169,6 @@
             -moz-animation-delay: 1.5s;
         }
 
-
-
         @keyframes f_fadeG {
             0% {
                 background-color: rgb(17, 114, 217);
@@ -222,7 +220,9 @@
         }
     </style>
 </head>
-
+@php
+    $user = Auth::user();
+@endphp
 <body class="bg-light">
     <div class="preloader">
         {{-- <div class="loader">
@@ -241,7 +241,7 @@
         <span class="fa-fade loader-text">Please wait...</span>
     </div>
     @include('layout.header')
-    <main class="container" style="max-width: calc(100% - 420px); margin-top: 70px;">
+    <main class="container" style="max-width: calc(100% - 520px); margin-top: 70px;">
         @include('layout.nav')
         <div class="container">
             @yield('content')
@@ -253,21 +253,17 @@
                         <table class="table table-borderless table-striped align-middle">
                             <thead class="position-sticky">
                                 <tr class="text-uppercase">
-                                    {{-- <th>#</th> --}}
                                     <th scope="col">item</th>
                                     <th scope="col">qty</th>
                                     <th scope="col">Price</th>
-                                    {{-- <th width="0%" scope="col"></th> --}}
                                 </tr>
                             </thead>
                             <tbody id="cart-row" class="text-capitalize">
                             </tbody>
                         </table>
                     </div>
-
                 </div>
             </section>
-            {{-- <div class="container"> --}}
             @use(App\Models\PaymentMethod)
             @use(App\Models\Customer)
             @php
@@ -325,7 +321,6 @@
                         save & confirm</button>
                 </div>
             </div>
-            {{-- </div> --}}
         </aside>
     </main>
     <script type="text/javascript">

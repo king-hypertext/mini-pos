@@ -88,12 +88,12 @@
             <p>{{ env('APP_STORE_NAME') }}</p>
             <p>Date: {{ now()->format('d F Y h:i A') }}</p>
         </header>
-        <strong>#{{ $sale->sale_number }}</strong>
+        <strong>#{{ $sale->sale_number }}</strong> &nbsp; Paid with: <strong>{{ $sale->paymentMethod->name }}</strong>
         <table>
             <thead>
                 <tr>
                     <th>Item</th>
-                    <th>Quantity</th>
+                    <th>Qty</th>
                     <th>Price</th>
                     <th>Total</th>
                 </tr>
@@ -120,6 +120,7 @@
             </tfoot>
         </table>
         <footer>
+
             <p>Thank you for your purchase!</p>
         </footer>
     </div>
